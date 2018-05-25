@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <title>Pull to Refresh</title>
+    <meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;" />
+    <style>
+         .outerscroller{
+            position: relative;
+            top:0px;
+            bottom:0px;
+            width:100%;
+            left:0px;
+
+        }
+        /* .outerscroller::before{
+            content: "&nbsp;";
+            background:red;
+            background-size: cover;
+            width: 20px;
+            height: 20px;
+            border-radius: 100%;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            margin-left: -10px;
+        } */
+        .innerscroll{
+            width:100%;
+            margin-top:0px;
+            position: absolute;
+            left:0px;
+            padding:0px;
+            top:0px;
+        }
+    </style>
+</head>
+<body>
+<div class="outerscroller"><div class = 'innerscroll'>
+
+</div></div>
+<!--  -->
+<script>
+    var scroll = document.querySelector('.innerscroll');
+    var outerScroller = document.querySelector('.outerscroller');
+    var touchStart = 0;
+    var touchDis = 0;
+    outerScroller.addEventListener('touchstart', function(event) {
+        var touch = event.targetTouches[0];
+        // 把元素放在手指所在的位置
+        touchStart = touch.pageY;
+        console.log(touchStart);
+    }, false);
+    outerScroller.addEventListener('touchmove', function(event) {
+        var touch = event.targetTouches[0];
+        console.log(touch.pageY + 'px');
+        scroll.style.top = (scroll.offsetTop + touch.pageY-touchStart) > 100 ? "100px" : scroll.offsetTop + touch.pageY-touchStart + 'px';
+        console.log(scroll.style.top);
+        touchStart = touch.pageY;
+        touchDis = touch.pageY-touchStart;
+    }, false);
+    outerScroller.addEventListener('touchend', function(event) {
+        touchStart = 0;
+        var top = scroll.offsetTop;
+        console.log(top);
+        if(top>70){
+            console.log(111)
+        }
+        if(top>0){
+            var time = setInterval(function(){
+                scroll.style.top = scroll.offsetTop -2+'px';
+                if(scroll.offsetTop<=0)clearInterval(time);
+            },1)
+        }
+    }, false);
+
+</script>
+</body>
+</html>
+
+
+
+
+<!--  
+
+loading.gif 
+http://pic2.shangpin.com/e/s/18/05/23/20180523111413221482-0-0.jpg
+↓箭头
+http://pic3.shangpin.com/e/s/18/05/23/20180523112534442639-0-0.jpg
+↑箭头
+http://pic1.shangpin.com/e/s/18/05/23/20180523112535409202-0-0.jpg
+
+最外层 嵌套 
+<div class="outerscroller" id="outerscroller">
+    <div class="innerscroll" id="innerscroll">
+        <div class="scroll-before" id="scroll-before">
+            <img id="scroll-img" class="scroll-img" src="http://pic3.shangpin.com/e/s/18/05/23/20180523112534442639-0-0.jpg" alt="loading" />
+            <span class="scroll-txt" id="scroll-txt">下拉更新</span>
+        </div>
+        **************内容********************
+    </div>
+</div>
+
+-->
+
+<!--  下拉刷新 ↓ -->
+<!-- 
+
+<style>
+    td input[type="radio"] {
+        -webkit-appearance: radio;
+    }
+
+    .container {
+        overflow: inherit;
+    }
+
+    .outerscroller {
+        position: relative;
+        top: 0px;
+        bottom: 0px;
+        width: 100%;
+        left: 0px;
+
+    }
+
+    .innerscroll .scroll-before {
+        width: 60px;
+        height: 60px;
+        border-radius: 100%;
+        position: absolute;
+        top: -50px;
+        left: 50%;
+        margin-left: -30px;
+        visibility:hidden;
+        z-index:-1;
+    }
+
+    .innerscroll {
+        width: 100%;
+        margin-top: 0px;
+        position: absolute;
+        left: 0px;
+        padding: 0px;
+        top: 0px;
+    }
+    .scroll-img{
+        width:20px;
+        height:20px;
+        margin-left:20px;
+    }
+    .scroll-txt {
+        display: block;
+        position:absolute;
+        bottom:15px;
+        left:0;
+        width: 60px;
+        color: #cecece;
+        font-size:10px;
+        height:30px;
+        line-height:30px;
+        text-align:center;
+    }
+</style>
+<script>
+    var scroll = document.getElementById('innerscroll');
+    var outerScroller = document.getElementById('outerscroller');
+    var scrollBefore = document.getElementById('scroll-before');
+    var scrollTxt = document.getElementById('scroll-txt');
+    var scrollImg = document.getElementById('scroll-img');
+    var touchStart = 0;
+    var touchDis = 0;
+    var onoff = false;
+    var dura = 0;
+    var html = document.documentElement || document.body;
+    html.addEventListener('touchmove',function(e){
+        // 判断默认行为是否可以被禁用
+        if (e.cancelable) {
+            // 判断默认行为是否已经被禁用
+            if (!e.defaultPrevented) {
+                e.preventDefault();
+            }
+        }
+    },{passive:false});
+    outerScroller.addEventListener('touchstart', function(event) {
+        var touch = event.targetTouches[0];
+        // 把元素放在手指所在的位置
+        touchStart = touch.pageY;
+        //console.log(touchStart);
+    }, false);
+    outerScroller.addEventListener('touchmove', function(event) {
+        var touch = event.targetTouches[0];
+        scroll.style.top = scroll.offsetTop + touch.pageY-touchStart + 'px';
+        touchStart = touch.pageY;
+        touchDis = touch.pageY-touchStart;
+            var top = scroll.offsetTop;
+            if(top>=30){
+                scrollBefore.style.visibility = "visible";
+            }
+            if(top>=70){
+                scrollTxt.innerText = "松开更新";
+                scrollImg.src="http://pic1.shangpin.com/e/s/18/05/23/20180523112535409202-0-0.jpg";
+            }
+    }, false);
+    outerScroller.addEventListener('touchend', function(event) {
+        touchStart = 0;
+        var top = scroll.offsetTop;
+        if(top>=70){
+            onoff = true;
+            dura = 800;
+            scrollTxt.innerText = "更新中…";
+            scrollImg.src="http://pic2.shangpin.com/e/s/18/05/23/20180523111413221482-0-0.jpg";
+        }
+        setTimeout(function(){
+            if(top>0){
+                var time = setInterval(function(){
+                    scroll.style.top = scroll.offsetTop - 2 +'px';
+                    if(scroll.offsetTop<=0){
+                        scroll.style.top = 0;
+                        scrollBefore.style.visibility = "hidden";
+                        clearInterval(time);
+                        if(onoff) window.location.reload();
+                    }
+                },1)
+            }
+        },dura)
+    }, false);
+   
+</script>
+
+
+-->
+<!--  下拉刷新 ↑ -->
+
+
+
